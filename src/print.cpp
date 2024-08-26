@@ -6,16 +6,7 @@
 #include "../h/riscv.hpp"
 #include "../lib/console.h"
 
-/*void printString(char const *string){
-    while (*string != '\0')
-    {
-        __putc(*string);
-        string++;
-    }
-}*/
-
-
-void printString(char const *string)
+void printStringg(char const *string)
 {
     uint64 sstatus = Riscv::r_sstatus();
     Riscv::mc_sstatus(Riscv::SSTATUS_SIE);

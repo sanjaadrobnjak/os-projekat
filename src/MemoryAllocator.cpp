@@ -51,7 +51,7 @@ void *MemoryAllocator::mem_alloc(size_t size) {
         bestFit->velicina=prostor;
 
         size_t adr=sizeof (SlobodniBlokovi)+prostor;   //poziciija gde pocinje novi blok nakon alociranog dela
-        SlobodniBlokovi* noviBlok=(SlobodniBlokovi*)((char *)bestFit+adr);
+        auto* noviBlok=(SlobodniBlokovi*)((char *)bestFit+adr);
         if(prethBF) prethBF->sledeci=noviBlok;
         else pocetak=noviBlok;
         noviBlok->sledeci=bestFit->sledeci;
@@ -88,7 +88,7 @@ int MemoryAllocator::mem_free(void *adresa) {
     }
 
     //ubacujem blok nakon bloka trenutni
-    SlobodniBlokovi* noviBlok=(SlobodniBlokovi*)adresa;
+    auto* noviBlok=(SlobodniBlokovi*)adresa;
     //noviBlok->velicina=.. !!!PROVERITI!!!
     if(trenutni!= nullptr){
         noviBlok->sledeci=trenutni->sledeci;

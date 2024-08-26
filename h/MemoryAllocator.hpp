@@ -23,7 +23,7 @@ protected:
     };
 
 private:
-     static SlobodniBlokovi* pocetak;
+     static SlobodniBlokovi* pocetak;   //svi objekti klase MemoryAllocator dele isti pocetak
 
 public:
     static void* mem_alloc(size_t size);
