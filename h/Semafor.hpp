@@ -18,7 +18,6 @@ protected:
     };
 private:
     int val;
-    //static List<TCB> blokiraneNiti;
     friend class Riscv;
     bool zatvoren;
     blokiraneNiti* pocetak;

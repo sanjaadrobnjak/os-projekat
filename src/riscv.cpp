@@ -53,15 +53,17 @@ void Riscv::handleSupervisorTrap()
             TCB** handle;
             void(*start_routine)(void*);
             void* argument;
-
-            __asm__ volatile("mv %0, a1":"=r"(handle));
-            __asm__ volatile("mv %0, a2":"=r"(start_routine));
+            /*
             __asm__ volatile("mv %0, a3":"=r"(argument));
-            /*__asm__ volatile("ld %0, 11*8(fp)" : "=r"(handle));
+            __asm__ volatile("mv %0, a2":"=r"(start_routine));
+            __asm__ volatile("mv %0, a1":"=r"(handle));
+*/
+
+            __asm__ volatile("ld %0, 11*8(fp)" : "=r"(handle));
 
             __asm__ volatile("ld %0, 12*8(fp)" : "=r"(start_routine));
 
-            __asm__ volatile("ld %0, 13*8(fp)" : "=r"(argument));*/
+            __asm__ volatile("ld %0, 13*8(fp)" : "=r"(argument));
 
             *handle=TCB::createThread(start_routine, argument);
             if(*handle== nullptr) {
@@ -76,6 +78,7 @@ void Riscv::handleSupervisorTrap()
             povratna=TCB::exit();
             __asm__ volatile("mv a0, %0"::"r"(povratna));
         } else if(broj==0x13){  //THREAD_DISPATCH()
+            TCB::timeSliceCounter=0;
             TCB::dispatch();
         } else if(broj==0x21){  //SEM_OPEN
             //int sem_open(semt* handle, unsigned init);
@@ -131,7 +134,7 @@ void Riscv::handleSupervisorTrap()
     else if (scause == 0x8000000000000001UL)    //spoljasnji softverski prekid
     {
         // interrupt: yes; cause code: supervisor software interrupt (CLINT; machine timer interrupt)
-        //mc_sip(SIP_SSIP);
+        mc_sip(SIP_SSIP);
         TCB::timeSliceCounter++;
         if (TCB::timeSliceCounter >= TCB::running->getTimeSlice())
         {
@@ -142,7 +145,7 @@ void Riscv::handleSupervisorTrap()
             w_sstatus(sstatus);
             w_sepc(sepc);
         }
-        mc_sip(SIP_SSIP);
+        //mc_sip(SIP_SSIP);
     }
     else if (scause == 0x8000000000000009UL)    //spoljasnji hardverski prekid
     {

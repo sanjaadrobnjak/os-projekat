@@ -60,7 +60,7 @@ private:
 
     static uint64 timeSliceCounter;
 
-    static uint64 constexpr STACK_SIZE = DEFAULT_STACK_SIZE*3;
+    static uint64 constexpr STACK_SIZE = DEFAULT_STACK_SIZE;
     static uint64 constexpr TIME_SLICE = DEFAULT_TIME_SLICE;
 };
 

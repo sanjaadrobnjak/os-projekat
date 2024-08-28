@@ -10,7 +10,6 @@
 
 
 extern void userMain();
-//extern void producerConsumer_C_API();
 
 int main(){
     //printStringg("Sanja\n");
@@ -22,11 +21,8 @@ int main(){
     threads[0] = TCB::createThread(nullptr, nullptr);
     threads[0]->sisNit=1;
 
-    //printStringg("Main nit je kreirana\n");
-
     threads[1] = TCB::createThread((void (*)(void *))(&userMain), nullptr);
-    //threads[1] = TCB::createThread((void (*)(void *))(&producerConsumer_C_API), nullptr);
-    //printStringg("userMain nit je kreirana\n");
+
     TCB::running = threads[0];
 
     Riscv::ms_sstatus(Riscv::SSTATUS_SIE);
