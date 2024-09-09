@@ -25,7 +25,7 @@ private:
     thread_t myHandle;
     void (*body)(void*);
     void* arg;
-    static void thread(void* p);    //wrapper funkcija, prvi kolokvijum april 2013. godine 4. zadatak
+    static void thread(void* p);    //wrapper funkcija (ideja uzeta sa prvog kolokvijuma aprila 2013. godine 4. zadatak)
 };
 
 class Semaphore{

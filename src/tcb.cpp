@@ -4,14 +4,15 @@
 
 #include "../h/tcb.hpp"
 #include "../h/riscv.hpp"
+#include "../h/syscall_c.h"
 
 TCB *TCB::running = nullptr;
 
 uint64 TCB::timeSliceCounter = 0;
 
-TCB *TCB::createThread(Body body, void* argument)
+TCB *TCB::createThread(Body body, void* argument, uint64 timeSlice)
 {
-    return new TCB(body, TIME_SLICE, argument);
+    return new TCB(body, timeSlice, argument);
 }
 
 void TCB::yield()
@@ -24,10 +25,7 @@ void TCB::dispatch()
     TCB *old = running;
     if (!old->isFinished() && !old->blokirana) { Scheduler::put(old); }
     running = Scheduler::get();
-
     TCB::contextSwitch(&old->context, &running->context);
-
-
 }
 
 void TCB::threadWrapper()
@@ -36,13 +34,6 @@ void TCB::threadWrapper()
     running->body(running->argument);
     running->setFinished(true);
     TCB::yield();
-}
-
-int TCB::exit()
-{
-    running->setFinished(true);
-    TCB::yield();
-    return 0;
 }
 
 TCB::TCB(TCB::Body bodyy, uint64 timeSlicee, void *arg)
@@ -55,22 +46,22 @@ TCB::TCB(TCB::Body bodyy, uint64 timeSlicee, void *arg)
                    stack != nullptr ? (uint64) &stack[STACK_SIZE] : 0
                     };
     this->finished= false;
-    this->sisNit=0;
+
+    if(bodyy!= nullptr){
+        this->sisNit=0;
+    } else if(bodyy== nullptr && arg== nullptr){
+        this->sisNit=1;
+    }
     this->blokirana= false;
+
     if (this->body!= nullptr){
         Scheduler::put(this);
     }
+}
 
-/*:
-            body(body),
-            argument(arg)
-            stack(body != nullptr ? new uint64[STACK_SIZE] : nullptr),
-            context({(uint64) &threadWrapper,
-                     stack != nullptr ? (uint64) &stack[STACK_SIZE] : 0
-                    }),
-            timeSlice(timeSlice),
-            finished(false)
-    {
-        if (body != nullptr) { Scheduler::put(this); }
-    }*/
+int TCB::exit()
+{
+    running->setFinished(true);
+    thread_dispatch();
+    return 0;
 }

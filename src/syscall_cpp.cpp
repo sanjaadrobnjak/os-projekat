@@ -2,21 +2,18 @@
 // Created by os on 8/21/24.
 //
 #include "../h/syscall_cpp.hpp"
-#include "../h/MemoryAllocator.hpp"
-#include "../h/scheduler.hpp"
 #include "../h/print.hpp"
 
 Thread::Thread(void (*body)(void *), void *arg) {
     int rez=thread_create(&myHandle, body, arg);
     if(rez!=0){
-        printStringg("Greska pri kreiranju niti! \n");
+        printStringg("SANJA:Greska pri kreiranju niti! \n");
     }
 }
 
 Thread::~Thread() {
     myHandle->setFinished(true);
-    //delete myHandle;
-    MemoryAllocator::mem_free(myHandle);
+    mem_free(myHandle);
 }
 
 int Thread::start() {
@@ -35,7 +32,7 @@ int Thread::sleep(time_t) {
 Thread::Thread() {
     int rez= thread_create(&myHandle, Thread::thread, (void*) this);
     if(rez!=0) {
-        printStringg("Greska pri kreiranju niti!\n");
+        printStringg("SANJA:Greska pri kreiranju niti!\n");
     }
 }
 
@@ -47,14 +44,14 @@ void Thread::thread(void *p) {
 Semaphore::Semaphore(unsigned int init) {
     int rez= sem_open(&myHandle, init);
     if(rez!=0){
-        printStringg("Greska pri kreiranju semafora!\n");
+        printStringg("SANJA:Greska pri kreiranju semafora!\n");
     }
 }
 
 Semaphore::~Semaphore() {
     int rez= sem_close(myHandle);
     if(rez!=0){
-        printStringg("Greska pri brisanju semafora!\n");
+        printStringg("SANJA:Greska pri brisanju semafora!\n");
     }
 }
 

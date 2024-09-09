@@ -21,9 +21,9 @@ public:
 
     uint64 getTimeSlice() const { return timeSlice; }
 
-    using Body = void (*)(void *);    //Body je pokazivac na funkciju ciji je argument tipa void* i koja nema povratnu vrednost
+    using Body = void (*)(void *);
 
-    static TCB *createThread(Body body, void* argument);
+    static TCB *createThread(Body body, void* argument, size_t timeSlice);
 
     static void yield();
     static void dispatch();
@@ -39,7 +39,7 @@ private:
 
     struct Context
     {
-        uint64 ra;  //dokle je nit stigla kako bi mogla da se vrati kasnije
+        uint64 ra;
         uint64 sp;
     };
 
@@ -47,7 +47,7 @@ private:
     void* argument;
     uint64 *stack;
     Context context;
-    uint64 timeSlice;   //broj perioda koji dobija nit svaki put kad joj je dodeljen procesor
+    uint64 timeSlice;
     bool finished;
 
     friend class Riscv;

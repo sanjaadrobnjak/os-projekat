@@ -7,19 +7,17 @@
 MemoryAllocator::SlobodniBlokovi* MemoryAllocator::pocetak;
 
 void *MemoryAllocator::mem_alloc(size_t size) {
-    if(size<=0) return nullptr; //neispravan unos prostora za alokaciju
-    if(pocetak== nullptr) return nullptr; //nema slobodnog prostora za alokaciju
+    if(size<=0) return nullptr;
+    if(pocetak== nullptr) return nullptr;
 
-    //prostor koji zeli da se alocira u broju blokova
     int blokovi=size/MEM_BLOCK_SIZE;
     if(size%MEM_BLOCK_SIZE!=0){
         blokovi++;
     }
 
-    //prostor koji zeli da se alocira u bajtovima poravnat na min br blokova
+
     size_t prostor=blokovi*MEM_BLOCK_SIZE;
 
-    //prolazim kroz listu slobodnih blokova da vidim ima li mesta za novu alokaciju
     SlobodniBlokovi* trenutni=pocetak;
     SlobodniBlokovi* prethTren= nullptr;
     SlobodniBlokovi* bestFit= nullptr;
@@ -41,16 +39,16 @@ void *MemoryAllocator::mem_alloc(size_t size) {
         }
     }
 
-    if(bestFit== nullptr) return nullptr;   //nema slobodnog prostora za novu alokaciju
+    if(bestFit== nullptr) return nullptr;
 
 
     //imam sig slobodan prostor za alok.
     size_t ostatak=bestFit->velicina-prostor;
     if(ostatak>=MEM_BLOCK_SIZE+sizeof (SlobodniBlokovi)){
-        //imam dovoljno prostora da ostatak ulancam u listu slobodnih
+
         bestFit->velicina=prostor;
 
-        size_t adr=sizeof (SlobodniBlokovi)+prostor;   //poziciija gde pocinje novi blok nakon alociranog dela
+        size_t adr=sizeof (SlobodniBlokovi)+prostor;
         auto* noviBlok=(SlobodniBlokovi*)((char *)bestFit+adr);
         if(prethBF) prethBF->sledeci=noviBlok;
         else pocetak=noviBlok;
@@ -75,39 +73,34 @@ int MemoryAllocator::mem_free(void *adresa) {
 
     if(adresa>=HEAP_END_ADDR || adresa<HEAP_START_ADDR) return -1;
 
-    //!!!ARGUMENT MORA BITI VRACENA VR IZ mem_alloc!!!
-
     SlobodniBlokovi* trenutni;
-    if(pocetak== nullptr){  //nema vise slobodnog mesta uopste
+    if(pocetak== nullptr){
         trenutni= nullptr;
-    } else if((char*)pocetak>adresa){   //sve do pocetka je zauzeto
+    } else if((char*)pocetak>adresa){
         trenutni= nullptr;
     } else{
-        //trazim mesto u listi slobodnih da se po adresi smesti addr, tj da ide nakon trenutni
         for(trenutni=pocetak; trenutni->sledeci!= nullptr && adresa>(char*)(trenutni->sledeci); trenutni=trenutni->sledeci);
     }
 
-    //ubacujem blok nakon bloka trenutni
     auto* noviBlok=(SlobodniBlokovi*)adresa;
-    //noviBlok->velicina=.. !!!PROVERITI!!!
+
     if(trenutni!= nullptr){
         noviBlok->sledeci=trenutni->sledeci;
         trenutni->sledeci=noviBlok;
     }
-    spoji(noviBlok);
-    spoji(trenutni);
+    if(spoji(noviBlok));
+    if(spoji(trenutni));
     return 0;
 }
 
-int MemoryAllocator::spoji(MemoryAllocator::SlobodniBlokovi *tren) {
+bool MemoryAllocator::spoji(MemoryAllocator::SlobodniBlokovi *tren) {
     if(tren== nullptr) return 0;
 
-    //proveravam da li nakon tren slob bloka pocinje jos jedan slob blok kako bih prosirila tren slobodni fragment
     if (tren->sledeci && (char*)tren+tren->velicina==(char*)(tren->sledeci)){
         tren->velicina=tren->velicina+tren->sledeci->velicina;
         tren->sledeci=tren->sledeci->sledeci;
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 

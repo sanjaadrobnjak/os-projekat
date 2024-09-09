@@ -12,7 +12,6 @@
 class Riscv
 {
 public:
-    //svi registri su 64b pa koristim uint64
 
     // pop sstatus.spp and sstatus.spie bits (has to be a non inline function)-statusni reg i reg za prekide
     static void popSppSpie();
@@ -46,7 +45,7 @@ public:
     {
         SIP_SSIP = (1 << 1),    //postoji zahtev za softverski prekid
         SIP_STIP = (1 << 5),
-        SIP_SEIP = (1 << 9),    //postoji zahtev za spoljasnji hardverski prekid
+        SIP_SEIP = (1 << 9),
     };
 
     // mask set register sip
@@ -61,11 +60,11 @@ public:
     // write register sip
     static void w_sip(uint64 sip);
 
-    //statusni registar upisuje vrednosti
+
     enum BitMaskSstatus
     {
         SSTATUS_SIE = (1 << 1),     //nulu cime se maskiraju spoljasnji prekidi
-        SSTATUS_SPIE = (1 << 5),    //prethodnu vrednost bita sie
+        SSTATUS_SPIE = (1 << 5),
         SSTATUS_SPP = (1 << 8),     //vr koja pokazuje iz kog rezima se dogodio skok (0-kor, 1-sis)
     };
 
@@ -85,6 +84,7 @@ public:
     static void supervisorTrap();
 
 private:
+    static void changeStatus(int s);    //u zavisnosti u kom rezimu se nalazi setuje/clearuje statusni reg
 
     // supervisor trap handler-u potpunosti obradjuje sam trap
     static void handleSupervisorTrap();
@@ -181,6 +181,14 @@ inline uint64 Riscv::r_sstatus()
 inline void Riscv::w_sstatus(uint64 sstatus)
 {
     __asm__ volatile ("csrw sstatus, %[sstatus]" : : [sstatus] "r"(sstatus));
+}
+
+inline void Riscv::changeStatus(int s) {
+    if(s==0){
+        mc_sstatus(SSTATUS_SPP);
+    } else{
+        ms_sstatus(SSTATUS_SPP);
+    }
 }
 
 #endif //OS1_VEZBE07_RISCV_CONTEXT_SWITCH_2_INTERRUPT_RISCV_HPP

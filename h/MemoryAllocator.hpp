@@ -14,21 +14,18 @@
 class MemoryAllocator{
 
 protected:
-    //slobodni blokovi su uredjeni u jednostruko ulancanu listu (neuredjenu po vel, a uredjenu po adresi)
-    //svaki elem liste je 1 slobodan deo memkoji na pocetku ima zaglavlje tipa SlobodniBlokovi
-    //u kome je pok na sl takav zapis, kao i velicina slobodnog bloka iza ovog zaglavlja
     struct SlobodniBlokovi{
         SlobodniBlokovi* sledeci;
         size_t velicina; //u bajtovima, broj slobodnih blokova*MEM_BLK_SIZE
     };
 
 private:
-     static SlobodniBlokovi* pocetak;   //svi objekti klase MemoryAllocator dele isti pocetak
+     static SlobodniBlokovi* pocetak;
 
 public:
     static void* mem_alloc(size_t size);
     static int mem_free(void*);
-    static int spoji(SlobodniBlokovi* tren);
+    static bool spoji(SlobodniBlokovi* tren);
 
     static void init();
 

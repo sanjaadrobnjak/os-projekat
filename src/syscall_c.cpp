@@ -6,18 +6,17 @@
 
 
 void* mem_alloc(size_t size){
-    __asm__ volatile("mv a1, %0"::"r"(size));   //u a1 upisujem size
-    __asm__ volatile("mv a0, %0"::"r"(0x01));   //u a0 upisujem 0x01
+    __asm__ volatile("mv a1, %0"::"r"(size));
+    __asm__ volatile("mv a0, %0"::"r"(0x01));
     __asm__ volatile("ecall");
     void* povratna;
-    __asm__ volatile("mv %0, a0":"=r"(povratna));   //u povratnu vrednost upisujem a0
-
+    __asm__ volatile("mv %0, a0":"=r"(povratna));
     return povratna;
 }
 
 int mem_free(void* adresa){
-    __asm__ volatile("mv a1, %0"::"r"(adresa)); //u a1 upisujem adresa
-    __asm__ volatile("mv a0, %0"::"r"(0x02));   //u a0 upisujem 0x02
+    __asm__ volatile("mv a1, %0"::"r"(adresa));
+    __asm__ volatile("mv a0, %0"::"r"(0x02));
     __asm__ volatile("ecall");
     int povratna;
     __asm__ volatile("mv %0, a0":"=r"(povratna));
@@ -25,7 +24,6 @@ int mem_free(void* adresa){
 }
 
 int thread_create( thread_t* handle, void(*start_routine)(void*), void* arg){
-
     __asm__ volatile("mv a3, %0"::"r"(arg));
     __asm__ volatile("mv a2, %0"::"r"(start_routine));
     __asm__ volatile("mv a1, %0"::"r"(handle));

@@ -21,8 +21,6 @@ private:
     friend class Riscv;
     bool zatvoren;
     blokiraneNiti* pocetak;
-
-
 public:
     explicit Semafor(int init=1): val(init), zatvoren(false), pocetak(nullptr) {}
 
@@ -32,8 +30,6 @@ public:
     int wait();
     int signal();
     int tryWait();
-
-
 };
 
 

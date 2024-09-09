@@ -3,39 +3,36 @@
 //
 #include "../h/tcb.hpp"
 #include "../h/riscv.hpp"
-#include "../test/printing.hpp"
-#include "../h/syscall_c.h"
 #include "../h/MemoryAllocator.hpp"
-
+#include "../h/syscall_cpp.hpp"
+#include "../h/print.hpp"
 
 
 extern void userMain();
 
-int main(){
-    //printStringg("Sanja\n");
-    //printStringg("POCETAK PROGRAMA!\n");
+void main(){
 
     MemoryAllocator::init();
-    TCB *threads[2];
+
+    TCB* nit;
+    TCB* testNit;
+
     Riscv::w_stvec((uint64) &Riscv::supervisorTrap);
-    threads[0] = TCB::createThread(nullptr, nullptr);
-    threads[0]->sisNit=1;
+    if(thread_create(&nit, nullptr, nullptr)==-1){
+        printStringg("SANJA:Greska pri kreiranju niti nit!!!\n");
+    }
+    TCB::running=nit;
 
-    threads[1] = TCB::createThread((void (*)(void *))(&userMain), nullptr);
-
-    TCB::running = threads[0];
-
+    if(thread_create(&testNit, (void (*)(void *))(&userMain), nullptr)==-1){
+        printStringg("SANJA:Greska pri kreiranju niti testNit!!!\n");
+    }
     Riscv::ms_sstatus(Riscv::SSTATUS_SIE);
 
-    while (!(threads[1]->isFinished() ))
+    while (1)
     {
+        if(testNit->isFinished()) break;
         thread_dispatch();
     }
 
-
-
-    //printStringg("KRAJ PROGRAMA!\n");*/
-
-
-    return 0;
+    printStringg("SANJA ZAVRSILA IZVRSAVANJE PROGRAMA!\n");
 }
