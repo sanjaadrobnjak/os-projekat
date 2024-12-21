@@ -1,0 +1,12 @@
+<p>provide works!</p>
+
+<table>
+<th>SERVICES</th>
+@for(s of allServices; track s){
+<tr>
+    <td>{{s.name}}</td><td><button (click)="chooseService(s.id)">Choose</button></td>
+</tr>
+}
+
+
+</table>

@@ -1,0 +1,11 @@
+<p>settings works!</p>
+<p>Settings</p>
+
+<h3>Change current password</h3>
+<form>
+    New password: 
+    <input type="password" [(ngModel)]="password" name="password" required>
+    <br><br><br>
+    <button (click)="changePassword()">Change password</button>
+    {{message}}
+</form>
